@@ -12,12 +12,17 @@ describe('Token', ()=>{
 
 
 	// preventing any duplicate + factorising let token 
-	let token
+	let token, accounts, deployer
+	// let accounts
+	// let deployer
 
 	beforeEach(async ()=>{
 		//step1: fetch tokern from thhe blockchain + deploy
 		const Token = await ethers.getContractFactory('Token')
 		token = await Token.deploy('DAPP University','DAPP','1000000')
+
+	 	accounts =  await ethers.getSigners()
+		deployer = accounts[0] //first address from our blockchain
 
 	})
 
@@ -27,8 +32,7 @@ describe('Token', ()=>{
 	const name = 'DAPP University'
 	const symbol = 'DAPP'
 	const decimals = '18'
-	const totalSupply = '1000000'
-
+	const totalSupply = '1000000'	
 
 	//name
 	it('has correct name', async ()=>{
@@ -56,6 +60,14 @@ describe('Token', ()=>{
 		//const value = tokens('1000000')
 
 		expect(await token.totalSupply()).to.equal(tokens(totalSupply))
+	})
+
+	//balance 
+	//total Supply 
+	it('assign total supply to deployer', async()=>{
+		//const value = tokens('1000000')
+		// console.log(deployer.address)
+		expect(await token.balanceOf(deployer.address)).to.equal(tokens(totalSupply))
 	})
 
 
