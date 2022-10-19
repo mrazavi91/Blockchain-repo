@@ -18,12 +18,17 @@ contract Token{
 	//for transfreing tokens we have to check balance first
 	//tracking balance
 	mapping(address => uint256) public balanceOf;
-
+	//thhe number of token that the spender allowto spendsowe have nested mapping
+	mapping(address => mapping(address => uint256)) public allowance;
 	//tranfer event 
 	event Transfer(address indexed from,
 	 address indexed to,
 	 uint256 value
 	 );
+	//approval event 
+	event Approval(address indexed owner,
+	 address indexed spender,
+	  uint256 value);
 
 
 
@@ -53,6 +58,20 @@ contract Token{
 		//emit event 
 		emit Transfer(msg.sender, _to, _value);
 		return true;
+	}
+
+	//allowance 
+	function approve(address _spender, uint256 _value)
+	 public
+	 returns (bool success)
+	{
+		require(_spender != address(0));
+		
+		allowance[msg.sender][_spender] = _value; 
+		//emit event 
+		emit Approval(msg.sender, _spender, _value);
+		return true;
+
 	}
 }
  

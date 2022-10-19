@@ -12,7 +12,7 @@ describe('Token', ()=>{
 
 
 	// preventing any duplicate + factorising let token 
-	let token, accounts, deployer, receiver 
+	let token, accounts, deployer, receiver , exchange
 	// let accounts
 	// let deployer
 
@@ -24,10 +24,11 @@ describe('Token', ()=>{
 	 	accounts =  await ethers.getSigners()
 		deployer = accounts[0] //first address from our blockchain
 		receiver = accounts[1]
+		exchange = accounts[2]
 
 	})
 
-	describe('Deployment', ()=>{
+    describe('Deployment', ()=>{
 	
 	//put all variable here 
 	const name = 'DAPP University'
@@ -123,6 +124,44 @@ describe('Token', ()=>{
 	
 	})
 
+	describe('Approving tokens', async()=>{
+		let amount , transaction , result
+		beforeEach( async()=>{
+			amount = tokens(100)
+		 	transaction = await token.connect(deployer).approve(exchange.address,amount)
+			result = await transaction.wait()
+		})
+
+		describe('Succes', async()=>{
+			it('allocates an allowance for deligated token spending', async ()=>{
+				expect(await token.allowance(deployer.address,exchange.address)).to.equal(amount)
+			})
+		    // event 
+		    it('emit a Approval event', async()=>{
+		    const event = result.events[0]
+			// console.log(event)
+			expect(event.event).to.equal('Approval')
+
+			//check args
+			const args = event.args
+			//console.log(args)
+			expect(args.owner).to.equal(deployer.address)
+			expect(args.spender).to.equal(exchange.address)
+			expect(args.value).to.equal(amount)
+
+		    })
+		})
+
+		describe('Failure', async()=>{
+			it('rejects invlaid recipent', async()=>{
+			await expect(token.connect(deployer).approve('0x0000000000000000000000000000000000000000', amount)).to.be.reverted
+
+		})
+
+		})
+
+
+	})
 	
 
 })
