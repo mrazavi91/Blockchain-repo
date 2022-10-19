@@ -19,7 +19,13 @@ contract Token{
 	//tracking balance
 	mapping(address => uint256) public balanceOf;
 
-	//send tokens 
+	//tranfer event 
+	event Transfer(address indexed from,
+	 address indexed to,
+	 uint256 value
+	 );
+
+
 
 	constructor(string memory _name, string memory _symbol, uint256 _totalSupply){
 		name = _name;
@@ -28,6 +34,25 @@ contract Token{
 		//writing message, msg.sender is the address of the person who deploy 
 		balanceOf[msg.sender] = totalSupply;
 		//reading message 
+	}
+
+	//transfer tokens 
+	function transfer(address _to, uint256 _value) 
+	 public 
+	 returns (bool success)
+	{
+		//requiare that sender has enough token to spend 
+		require(balanceOf[msg.sender] >= _value);
+		require(_to != address(0));
+
+		//deduct token from sender 
+		balanceOf[msg.sender] = balanceOf[msg.sender] - _value;
+		//credit token to reciever 
+		balanceOf[_to] = balanceOf[_to] + _value;
+
+		//emit event 
+		emit Transfer(msg.sender, _to, _value);
+		return true;
 	}
 }
  
