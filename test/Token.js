@@ -4,7 +4,7 @@ const {expect} = require('chai');
 
 // convert the wei to ether
 const tokens = (n)=>{
-	return ethers.utils.parseEther(n.toString(),'ether')
+	return ethers.utils.parseUnits(n.toString(),'ether')
 }
 
 describe('Token', ()=>{
@@ -133,7 +133,7 @@ describe('Token', ()=>{
 		})
 
 		describe('Succes', async()=>{
-			it('allocates an allowance for deligated token spending', async ()=>{
+			it('allocates an allowance for delegated token spending', async ()=>{
 				expect(await token.allowance(deployer.address,exchange.address)).to.equal(amount)
 			})
 		    // event 
@@ -155,12 +155,66 @@ describe('Token', ()=>{
 		describe('Failure', async()=>{
 			it('rejects invlaid recipent', async()=>{
 			await expect(token.connect(deployer).approve('0x0000000000000000000000000000000000000000', amount)).to.be.reverted
+		})
 
+
+		})
+
+
+
+	})
+
+	//transfrefrom
+	describe ('Delegated token transfer', async()=>{
+		// approving first 
+		let amount , transaction , result
+		beforeEach( async()=>{
+			amount = tokens(100)
+		 	transaction = await token.connect(deployer).approve(exchange.address,amount)
+			result = await transaction.wait()
+		})
+
+		//success 
+		describe('Success', async()=>{
+		 
+		 beforeEach( async()=>{
+			
+		 	transaction = await token.connect(exchange).transferFrom(deployer.address, receiver.address,amount)
+			result = await transaction.wait()
+		 })
+
+		 it('Transfers token balaces', async()=>{
+            expect(await token.balanceOf(deployer.address)).to.be.equal(ethers.utils.parseUnits('999900', 'ether'))
+			expect(await token.balanceOf(receiver.address)).to.equal(amount)
+		 })
+
+		 it('rests the allowance', async()=>{
+		    expect(await token.allowance(deployer.address,exchange.address)).to.equal(0)
+		 })
+
+		 it('emit a transfer event', async()=>{
+			const event = result.events[0]
+			// console.log(event)
+			expect(event.event).to.equal('Transfer')
+
+			//check args
+			const args = event.args
+			//console.log(args)
+			expect(args.from).to.equal(deployer.address)
+			expect(args.to).to.equal(receiver.address)
+			expect(args.value).to.equal(amount)
 		})
 
 		})
 
+		//Failure 
+		//success 
+		describe('Failure', async()=>{
+			const invalidAmount = tokens(100000000)
+			await expect(token.connect(exchange).transferFrom(deployer.address, receiver.address, invalidAmount)).to.be.reverted
 
+
+		})
 	})
 	
 
