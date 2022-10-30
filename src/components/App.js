@@ -1,12 +1,9 @@
 import {useEffect} from 'react';
-// import {ethers} from 'ethers';
-// import TOKEN_ABI from '../abis/Token.json'; 
-// import EXCHANGE_ABI from '../abis/Exchange.json'; 
 import config from '../config.json';
 import { useDispatch } from 'react-redux';
-
 import {loadProvider, loadNetwork, loadAccount, loadTokens, loadExchange} from '../store/interaction';
 import Navbar from './Navbar'; 
+import Markets from './Markets'
 
 function App() {
   const dispatch = useDispatch()
@@ -54,7 +51,7 @@ function App() {
       <main className='exchange grid'>
         <section className='exchange__section--left grid'>
 
-          {/* Markets */}
+          <Markets />
 
           {/* Balance */}
 
