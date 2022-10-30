@@ -42,7 +42,7 @@ export const tokens = (state = DEFAULT_TOKEN_STATE , action)=>{
       ...state,
       loaded: true,
       contracts: [...state.contracts , action.token],
-      symbols: [...state .symbols, action.symbol]
+      symbols: [...state.symbols, action.symbol]
 
      }
 
@@ -51,7 +51,7 @@ export const tokens = (state = DEFAULT_TOKEN_STATE , action)=>{
       ...state,
       loaded: true,
       contracts: [...state.contracts , action.token],
-      symbols: [...state .symbols, action.symbol]
+      symbols: [...state.symbols, action.symbol]
 
      }
 
