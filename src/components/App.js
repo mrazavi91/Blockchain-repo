@@ -5,7 +5,7 @@ import {useEffect} from 'react';
 import config from '../config.json';
 import { useDispatch } from 'react-redux';
 
-import {loadProvider, loadNetwork, loadAccount, loadToken} from '../store/interaction';
+import {loadProvider, loadNetwork, loadAccount, loadTokens, loadExchange} from '../store/interaction';
  
 
 function App() {
@@ -13,20 +13,24 @@ function App() {
 
   //fetching the metamask wallet to web 
   const loadBlockchainData = async ()=>{
-
-    await loadAccount(dispatch)
-    
-
     //connect ethers to blockchain 
     const provider = loadProvider(dispatch)
     
+    //fecth current account and balance from Metamask 
+    await loadAccount(provider, dispatch)
+
+    //fetch current networks chaainId(e.g hardhat: 31337, kovan: 42 )
     const chainId = await loadNetwork(provider, dispatch)
     
     //Token Smart Contract 
-    await loadToken(provider, config[chainId].Dapp.address, dispatch)
-    //symbol 
-    // const symbol = await token.symbol()
+    const Dapp = config[chainId].Dapp
+    const mETH = config[chainId].mETH
+    await loadTokens(provider, [Dapp.address, mETH.address], dispatch)
     
+    //exchange smart contract 
+    const exchangeConfig = config[chainId].exchange
+    await loadExchange(provider, exchangeConfig.address, dispatch)
+
   }
 
   useEffect(()=>{
