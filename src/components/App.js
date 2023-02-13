@@ -4,6 +4,7 @@ import { useDispatch } from 'react-redux';
 import {loadProvider, loadNetwork, loadAccount, loadTokens, loadExchange} from '../store/interaction';
 import Navbar from './Navbar'; 
 import Markets from './Markets'
+import Balance from './Balance'
 
 function App() {
   const dispatch = useDispatch()
@@ -53,7 +54,7 @@ function App() {
 
           <Markets />
 
-          {/* Balance */}
+          <Balance />
 
           {/* Order */}
 
